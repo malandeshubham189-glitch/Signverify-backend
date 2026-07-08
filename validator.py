@@ -12,10 +12,7 @@ def load_single_cert(data):
 
 def load_root_certs():
     roots = []
-    cert_files = [
-        "CCAIndia2022.cer",
-        "CCAIndia2022SPL.cer"
-    ]
+    cert_files = ["CCAIndia2022.cer", "CCAIndia2022SPL.cer"]
     for fname in cert_files:
         try:
             with open(fname, "rb") as f:
@@ -31,16 +28,16 @@ async def validate_pdf_async(file_path: str):
     try:
         trust_roots = load_root_certs()
         vc = ValidationContext(trust_roots=trust_roots, allow_fetching=True)
-
         with open(file_path, 'rb') as doc:
             reader = PdfFileReader(doc)
             sig_fields = reader.embedded_signatures
-
             if not sig_fields:
                 return {"error": "No digital signatures found in this PDF"}
-
             for sig in sig_fields:
                 try:
+                    embedded_certs = list(sig.other_embedded_certs)
+                    for c in embedded_certs:
+                        vc.certificate_registry.add_other_cert(c)
                     status = await async_validate_pdf_signature(sig, vc)
                     trust_problem = None
                     try:
@@ -58,7 +55,6 @@ async def validate_pdf_async(file_path: str):
                     })
                 except Exception as e:
                     results.append({"signature_error": str(e)})
-
         return {"signatures": results}
     except Exception as e:
         return {"error": f"Could not process PDF: {str(e)}"}

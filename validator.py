@@ -1,7 +1,14 @@
 from pyhanko.sign.validation import async_validate_pdf_signature
 from pyhanko.pdf_utils.reader import PdfFileReader
 from pyhanko_certvalidator import ValidationContext
-from asn1crypto import x509
+from asn1crypto import x509, pem
+
+def load_single_cert(data):
+    if pem.detect(data):
+        _, _, der_bytes = pem.unarmor(data)
+    else:
+        der_bytes = data
+    return x509.Certificate.load(der_bytes)
 
 def load_root_certs():
     roots = []
@@ -10,10 +17,13 @@ def load_root_certs():
         "CCAIndia2022SPL.cer"
     ]
     for fname in cert_files:
-        with open(fname, "rb") as f:
-            data = f.read()
-            cert = x509.Certificate.load(data)
-            roots.append(cert)
+        try:
+            with open(fname, "rb") as f:
+                data = f.read()
+                cert = load_single_cert(data)
+                roots.append(cert)
+        except Exception as e:
+            print(f"Failed to load {fname}: {e}")
     return roots
 
 async def validate_pdf_async(file_path: str):

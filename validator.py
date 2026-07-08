@@ -1,6 +1,6 @@
 from pyhanko.sign.validation import async_validate_pdf_signature
 from pyhanko.pdf_utils.reader import PdfFileReader
-from pyhanko.sign.validation.context import ValidationContext
+from pyhanko_certvalidator import ValidationContext
 from asn1crypto import x509
 
 def load_root_certs():

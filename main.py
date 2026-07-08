@@ -25,6 +25,22 @@ async def validate(file: UploadFile = File(...)):
 
     return result
 
+@app.post("/debug")
+async def debug(file: UploadFile = File(...)):
+    content = await file.read()
+    has_byterange = b'/ByteRange' in content
+    has_sig_type = b'/Type/Sig' in content or b'/Type /Sig' in content
+    has_acroform = b'/AcroForm' in content
+    count_byterange = content.count(b'/ByteRange')
+
+    return {
+        "file_size_bytes": len(content),
+        "has_byterange_marker": has_byterange,
+        "byterange_count": count_byterange,
+        "has_sig_type_marker": has_sig_type,
+        "has_acroform": has_acroform
+    }
+
 @app.get("/")
 def health():
     return {"status": "SignVerify backend is running"}

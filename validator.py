@@ -26,7 +26,7 @@ def load_root_certs():
     return load_certs(["CCAIndia2022.cer", "CCAIndia2022SPL.cer"])
 
 def load_intermediate_certs():
-    return load_certs(["eMudhraSubCA_eSignOTP2014.cer"])
+    return load_certs(["eMudhraSubCA_eSignOTP2014.cer", "eMudhraCA2014.cer"])
 
 async def validate_pdf_async(file_path: str):
     results = []

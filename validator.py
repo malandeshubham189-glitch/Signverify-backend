@@ -1,4 +1,3 @@
-import asyncio
 from pyhanko.sign.validation import async_validate_pdf_signature
 from pyhanko.pdf_utils.reader import PdfFileReader
 

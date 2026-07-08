@@ -26,3 +26,4 @@ def validate_pdf(file_path: str):
                 results.append({"error": str(e)})
 
     return {"signatures": results}
+    

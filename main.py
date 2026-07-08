@@ -44,3 +44,4 @@ async def debug(file: UploadFile = File(...)):
 @app.get("/")
 def health():
     return {"status": "SignVerify backend is running"}
+    

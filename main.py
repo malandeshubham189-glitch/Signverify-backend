@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import shutil, os
-from validator import validate_pdf
+from validator import validate_pdf_async
 
 app = FastAPI()
 
@@ -19,7 +19,7 @@ async def validate(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
 
     try:
-        result = validate_pdf(temp_path)
+        result = await validate_pdf_async(temp_path)
     finally:
         os.remove(temp_path)
 
@@ -44,4 +44,3 @@ async def debug(file: UploadFile = File(...)):
 @app.get("/")
 def health():
     return {"status": "SignVerify backend is running"}
-    

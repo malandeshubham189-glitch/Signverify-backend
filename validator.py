@@ -27,3 +27,4 @@ async def validate_pdf_async(file_path: str):
         return {"signatures": results}
     except Exception as e:
         return {"error": f"Could not process PDF: {str(e)}"}
+        

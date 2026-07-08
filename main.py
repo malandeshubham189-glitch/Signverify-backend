@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import shutil, os
-from validator import validate_pdf_async
+from validator import validate_pdf_async, load_root_certs, load_intermediate_certs
 
 app = FastAPI()
 
@@ -27,18 +27,17 @@ async def validate(file: UploadFile = File(...)):
 
 @app.post("/debug")
 async def debug(file: UploadFile = File(...)):
-    content = await file.read()
-    has_byterange = b'/ByteRange' in content
-    has_sig_type = b'/Type/Sig' in content or b'/Type /Sig' in content
-    has_acroform = b'/AcroForm' in content
-    count_byterange = content.count(b'/ByteRange')
+    roots = load_root_certs()
+    intermediates = load_intermediate_certs()
+
+    root_info = [str(r.subject.human_friendly) for r in roots]
+    intermediate_info = [str(i.subject.human_friendly) for i in intermediates]
 
     return {
-        "file_size_bytes": len(content),
-        "has_byterange_marker": has_byterange,
-        "byterange_count": count_byterange,
-        "has_sig_type_marker": has_sig_type,
-        "has_acroform": has_acroform
+        "roots_loaded": len(roots),
+        "root_subjects": root_info,
+        "intermediates_loaded": len(intermediates),
+        "intermediate_subjects": intermediate_info
     }
 
 @app.get("/")
